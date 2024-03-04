@@ -19,7 +19,7 @@ class UserModel
     {
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "SELECT user_id, user_name, user_email, user_active, user_has_avatar, user_deleted FROM users";
+        $sql = "SELECT user_id, user_name, user_email, user_active, user_has_avatar, user_deleted, user_account_type FROM users";
         $query = $database->prepare($sql);
         $query->execute();
 
@@ -38,6 +38,7 @@ class UserModel
             $all_users_profiles[$user->user_id]->user_email = $user->user_email;
             $all_users_profiles[$user->user_id]->user_active = $user->user_active;
             $all_users_profiles[$user->user_id]->user_deleted = $user->user_deleted;
+            $all_users_profiles[$user->user_id]->user_account_type = $user->user_account_type;
             $all_users_profiles[$user->user_id]->user_avatar_link = (Config::get('USE_GRAVATAR') ? AvatarModel::getGravatarLinkByEmail($user->user_email) : AvatarModel::getPublicAvatarFilePathOfUser($user->user_has_avatar, $user->user_id));
         }
 
@@ -339,5 +340,18 @@ class UserModel
 
         // return one row (we only have one result or nothing)
         return $query->fetch();
+    }
+
+    public static function getUserRole($user_role){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $query = $database->prepare("SELECT name FROM roles WHERE id = :role_id");
+        $query->execute(array(
+           ":role_id" => $user_role 
+        ));
+
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result[0]["name"];
     }
 }

@@ -11,7 +11,7 @@
             build things that use profile information of one or multiple/all users.
         </div>
         <div>
-            <table class="overview-table">
+            <table id="user_table" class="overview-table">
                 <thead>
                 <tr>
                     <td>Id</td>
@@ -19,6 +19,7 @@
                     <td>Username</td>
                     <td>User's email</td>
                     <td>Activated ?</td>
+                    <td>Role</td>
                     <td>Link to user's profile</td>
                 </tr>
                 </thead>
@@ -33,12 +34,18 @@
                         <td><?= $user->user_name; ?></td>
                         <td><?= $user->user_email; ?></td>
                         <td><?= ($user->user_active == 0 ? 'No' : 'Yes'); ?></td>
+                        <td><?php echo(UserModel::getUserRole($user->user_account_type))?></td>
                         <td>
                             <a href="<?= Config::get('URL') . 'profile/showProfile/' . $user->user_id; ?>">Profile</a>
                         </td>
                     </tr>
                 <?php } ?>
             </table>
+            <script>
+                $(function() {
+                $("#user_table").dataTable();
+                });
+            </script>
         </div>
     </div>
 </div>

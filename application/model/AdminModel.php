@@ -92,4 +92,45 @@ class AdminModel
             return true;
         }
     }
+
+    public static function getRoles(){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $query = $database->prepare("SELECT name FROM roles");
+        $query->execute();
+
+        $roles = $query->fetchAll(PDO::FETCH_ASSOC);
+        
+        $html = '<select name="role" id="role">';
+        foreach ($roles as $role) {
+            $roleName = htmlspecialchars($role['name']);
+            $html .= "<option value=\"$roleName\">$roleName</option>";
+        }
+        $html .= '</select>';
+    
+        echo($html);
+    }
+
+    public static function getRoleIDFromName($name){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $query = $database->prepare("SELECT id FROM roles WHERE name = :role_name");
+        $query->execute(array(
+           ":role_name" => $name 
+        ));
+
+        $result = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result[0]["id"];
+    }
+
+    public static function changeUserRole($user_id, $role){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $query = $database->prepare("UPDATE users SET user_account_type = :role_id WHERE user_id = :user_id");
+        $query->execute(array(
+            ":role_id" => AdminModel::getRoleIDFromName($role),
+            ":user_id" => $user_id
+        ));
+    }
 }
