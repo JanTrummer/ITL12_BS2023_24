@@ -36,4 +36,13 @@ class ChatController extends Controller{
             Redirect::home();
         }
     }
+
+    public function chat_action(){
+        ChatModel::addMessage(Request::post("receiver_id"), Request::post("message"));
+        Redirect::to("chat/showChat/". Request::post("receiver_id"));
+    }
+
+    public static function shouldDisplayNewMessageNotification($sender, $receiver){
+        return ChatModel::hasNewMessage($receiver, $sender);
+    }
 }

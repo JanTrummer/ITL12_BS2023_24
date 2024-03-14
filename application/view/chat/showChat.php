@@ -10,18 +10,25 @@
             <img src="<?= $message->sender->user_avatar_link; ?>" />
             <h3><?php echo($message->sender->user_name)?></h3>
             <p><?php echo($message->content)?></p>
-            <span class="time-right">11:00</span>
+            <span class="time-right"><?php echo($message->time)?></span>
          </div>
          <?php } ?>
          <?php if($message->receiver->user_id == Session::get("user_id")){ ?>
          <div class="chat darker">
-            <img src="<?= $message->sender->user_avatar_link; ?>" class="right"/>
+            <img src="<?= $message->sender->user_avatar_link; ?>"/>
             <h3><?php echo($message->sender->user_name)?></h3>
             <p><?php echo($message->content)?></p>
-            <span class="time-left">11:00</span>
+            <span class="time-left"><?php echo($message->time)?></span>
          </div>
          <?php } ?>
       </div>
       <?php } ?>
+
+      <form method="post" action="<?php echo Config::get('URL'); ?>chat/chat_action" method="post">
+            <input type="text" name="message" placeholder="Your message" required />
+            <input type="hidden" name="receiver_id" value=<?php echo($this->receiver->user_id)?>/>
+            
+            <input type="submit" value="Send" />
+      </form>
    </div>
 </div>

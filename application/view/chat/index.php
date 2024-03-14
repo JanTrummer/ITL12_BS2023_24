@@ -20,7 +20,9 @@
                     <img src="<?= $user->user_avatar_link; ?>" />
                     <?php } ?>
                 </td>
-                <td><?= $user->user_name; ?></td>
+                <td <?php if(ChatController::shouldDisplayNewMessageNotification($user->user_id, Session::get("user_id"))){
+                  echo("style='color: red'");
+                  } ?>><?= $user->user_name; ?></td>
                 <td><a href="<?= Config::get('URL') . 'chat/showChat/' . $user->user_id; ?>">Chat</a></td>
                 <?php endif; ?>
             </tr>
