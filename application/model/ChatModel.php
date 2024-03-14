@@ -56,4 +56,14 @@ class ChatModel{
             return true;
         }
     }
+
+    public static function getMessageCount($receiver_id, $sender_id){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT id FROM messages WHERE receiver = :receiver AND sender = :sender AND `read`=0";
+        $query = $database->prepare($sql);
+        $query->execute(array(':receiver' => $receiver_id, ':sender' => $sender_id));
+
+        return $query->rowCount();
+    }
 }

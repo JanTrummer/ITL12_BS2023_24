@@ -23,7 +23,7 @@
                 <td <?php if(ChatController::shouldDisplayNewMessageNotification($user->user_id, Session::get("user_id"))){
                   echo("style='color: red'");
                   } ?>><?= $user->user_name; ?></td>
-                <td><a href="<?= Config::get('URL') . 'chat/showChat/' . $user->user_id; ?>">Chat</a></td>
+                <td><a href="<?= Config::get('URL') . 'chat/showChat/' . $user->user_id; ?>"><?php if(ChatController::shouldDisplayNewMessageNotification($user->user_id, Session::get("user_id"))){echo(" New messages: ". ChatController::getNewMessageCount($user->user_id, Session::get("user_id")));}else{echo("Chat");}?></a></td>
                 <?php endif; ?>
             </tr>
             <?php } ?>

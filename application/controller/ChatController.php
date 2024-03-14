@@ -45,4 +45,8 @@ class ChatController extends Controller{
     public static function shouldDisplayNewMessageNotification($sender, $receiver){
         return ChatModel::hasNewMessage($receiver, $sender);
     }
+
+    public static function getNewMessageCount($sender, $receiver){
+        return ChatModel::getMessageCount($receiver, $sender);
+    }
 }
