@@ -14,9 +14,9 @@
          </div>
          <?php } ?>
          <?php if($message->receiver->user_id == Session::get("user_id")){ ?>
-         <div class="chat darker">
-            <img src="<?= $message->sender->user_avatar_link; ?>"/>
-            <h3><?php echo($message->sender->user_name)?></h3>
+         <div class="chat darker" >
+            <img style="float: right" src="<?= $message->sender->user_avatar_link; ?>"/>
+            <h3 style="float: right"><?php echo($message->sender->user_name)?></h3>
             <p><?php echo($message->content)?></p>
             <span class="time-left"><?php echo($message->time)?></span>
          </div>
