@@ -5,21 +5,27 @@ class ChatModel{
     public static function setMessageRead($message){
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "UPDATE messages SET `read` = 1 WHERE id = :id";
+        $sql = "CALL setMessageToRead(?)";
         $query = $database->prepare($sql);
-        $query->execute(array(':id' => $message));
+        $query->bindParam(1, $message);
+        $query->execute();
+        $query->closeCursor();
     }
 
     public static function getMessages($sender_id, $receiver_id){
         $database = DatabaseFactory::getFactory()->getConnection();
 
-        $sql = "SELECT * FROM messages WHERE (sender = :sender_id AND receiver = :receiver_id) OR (sender = :receiver_id AND receiver = :sender_id)";
+        $sql = "CALL getMessages(?, ?)";
         $query = $database->prepare($sql);
-        $query->execute(array(':sender_id' => $sender_id, ':receiver_id' => $receiver_id));
+        $query->bindParam(1, $sender_id);
+        $query->bindParam(2, $receiver_id);
+        $query->execute();
 
         $all_messages = array();
+        $data = $query->fetchAll();
+        $query->closeCursor();
 
-        foreach ($query->fetchAll() as $message){
+        foreach ($data as $message){
             if($message->sender == $receiver_id){
                 ChatModel::setMessageRead($message->id);
             }
@@ -37,9 +43,14 @@ class ChatModel{
 
     public static function addMessage($receiver_id, $content){
         $database = DatabaseFactory::getFactory()->getConnection();
-        $sql = "INSERT INTO messages (sender, receiver, content) VALUES (:sender, :receiver, :content)";
+        $sql = "CALL addMessage(?, ?, ?)";
         $query = $database->prepare($sql);
-        $query->execute(array(':sender' => Session::get("user_id"), ':receiver' => $receiver_id, ':content' => $content));
+        $sender_id = Session::get("user_id");
+        $query->bindParam(1, $sender_id);
+        $query->bindParam(2, $receiver_id);
+        $query->bindParam(3, $content);
+        $query->execute();
+        $query->closeCursor();
     }
 
     public static function hasNewMessage($receiver_id, $sender_id){
@@ -50,9 +61,11 @@ class ChatModel{
         $query->execute(array(':receiver' => $receiver_id, ':sender' => $sender_id));
 
         if($query->rowCount() == 0){
+            $query->closeCursor();
             return false;
         }
         else{
+            $query->closeCursor();
             return true;
         }
     }
@@ -63,7 +76,10 @@ class ChatModel{
         $sql = "SELECT id FROM messages WHERE receiver = :receiver AND sender = :sender AND `read`=0";
         $query = $database->prepare($sql);
         $query->execute(array(':receiver' => $receiver_id, ':sender' => $sender_id));
+        $count = $query->rowCount();
+        
+        $query->closeCursor();
 
-        return $query->rowCount();
+        return $count;
     }
 }
