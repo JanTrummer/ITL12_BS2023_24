@@ -38,6 +38,9 @@
                 <li <?php if (View::checkForActiveController($filename, "chat")) { echo ' class="active" '; } ?> >
                     <a href="<?php echo Config::get('URL'); ?>chat/index">Chat</a>
                 </li>
+                <li <?php if (View::checkForActiveController($filename, "gallery")) { echo ' class="active" '; } ?> >
+                    <a href="<?php echo Config::get('URL'); ?>gallery/index">Gallery</a>
+                </li>
                 <?php if (Session::get("user_account_type") == 7) : ?>
                     <li <?php if (View::checkForActiveControllerAndAction($filename, "register/index")) { echo ' class="active" '; } ?> >
                         <a href="<?php echo Config::get('URL'); ?>register/index">Register</a>
