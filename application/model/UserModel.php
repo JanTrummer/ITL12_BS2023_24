@@ -354,4 +354,14 @@ class UserModel
 
         return $result[0]["name"];
     }
+
+    public static function getUserNameByID($userID){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $query = $database->prepare("SELECT user_name FROM users WHERE user_id = :user_id");
+        $query->execute(array(":user_id" => $userID));
+        $data = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        return $data[0]["user_name"];
+    }
 }

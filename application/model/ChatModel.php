@@ -82,4 +82,73 @@ class ChatModel{
 
         return $count;
     }
+
+    public static function getMembers($groupID){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT members FROM groups WHERE id = :id";
+        $query = $database->prepare($sql);
+        $query->execute(array(':id' => $groupID));
+        $data = $query->fetchAll();
+        $members = array_map('intval', explode(",", $data[0]->members));
+
+        return $members;
+    }
+
+    public static function getGroupMessages($groupID){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT sender, message FROM groupMessages WHERE groupID = :groupID";
+        $query = $database->prepare($sql);
+        $query->execute(array(":groupID" => $groupID));
+        $data = $query->fetchAll();
+
+        $messages = array();
+        for($i = 0; $i < count($data); $i++){
+            $messages[$i] = new stdClass;
+            
+            $messages[$i]->sender = $data[$i]->sender;
+            $messages[$i]->message = $data[$i]->message;
+        }
+
+        return $messages;
+    }
+
+    public static function getGroups(){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "SELECT id, name FROM groups";
+        $query = $database->prepare($sql);
+        $query->execute();
+
+        $data = $query->fetchAll();
+        $groups = array();
+        
+        for($i = 0; $i < count($data); $i++){
+            $entry = $data[$i];
+
+            $groups[$i] = new stdClass();
+            $groups[$i]->id = $entry->id;
+            $groups[$i]->name = $entry->name;
+            $groups[$i]->members = ChatModel::getMembers($entry->id);
+        }
+
+        return $groups;
+    }
+
+    public static function createGroup($name, $members){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "INSERT INTO groups (members, name) VALUES (:name, :members)";
+        $query = $database->prepare($sql);
+        $query->execute(array(':members' => $members, ':name' => $name));
+    }
+
+    public static function addGroupMessage($groupID, $sender, $message){
+        $database = DatabaseFactory::getFactory()->getConnection();
+
+        $sql = "INSERT INTO groupmessages (groupID, sender, message) VALUES (:groupID, :sender, :message)";
+        $query = $database->prepare($sql);
+        $query->execute(array(":groupID" => $groupID, ":sender" => $sender, ":message" => $message));   
+    }
 }
